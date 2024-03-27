@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+      <title>Ajouter</title>
+      <link rel="stylesheet" href="bootstrap.min.css">
+      <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+      
+      <style>
+      
+      .card {
+        max-width: 510px;
+        padding: 30px;
+        margin: auto;
+      }
+      .othercard {
+        background-color: #CDCDCD;
+      }      
+      .Immatriculation, .Marque, .Carburant, .Kilometrage, .Vitesse, .Places, .Prix {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .fichier {
+        margin-top: 15px;
+      }
+      .Fichier {
+        color: blue;
+      }
+      
+  </style>
+
+  </head>
+  
+  <body style="background-color: lightblue">
+  
+  <div class="pt-2">
+   <div class="card othercard">
+   
+     <form method="post" action="ajouter_location.php" id="form_javascript" enctype="multipart/form-data">
+       <h3 style="color: blue; text-align: center">Ajouter une nouvelle voiture</h3>
+
+     <div id="validation" style="text-align: center">              
+       <div class="Immatriculation">
+         <label>Immatriculation :</label>
+         <input type="text" id="imm" name="immatriculation" placeholder="Entrez l'immatriculation :" >
+       </div>
+       <span id="imm_erreur" style="text-align: center"></span>
+       <span id="Imm_erreur" style="text-align: center"></span>
+       
+       <div class="Marque">
+         <label>Marque :</label>
+         <input type="text" id="marque" name="marque" placeholder="Entrez la marque :" >
+       </div>
+       <span id="marque_erreur" style="text-align: center"></span>
+       
+       <div class="Carburant">
+         <label>Type de carburant :</label>
+         <select id="carburant" name="carburant">
+           <option value="choisir_carburant" hidden>Choisir</option>
+           <option value="Diesel">Diesel</option>
+           <option value="Essence">Essence</option>
+         </select>
+       </div>
+       <span id="carburant_erreur" style="text-align: center"></span>
+      
+       <div class="Kilometrage">
+         <label>Kilométrage :</label>
+         <input type="text" id="kilometrage" name="kilometrage" placeholder="Entrez le kilométrage :" >
+       </div>
+       <span id="kilometrage_erreur" style="text-align: center"></span>
+       
+       <div class="Vitesse">
+         <label>Boîte de vitesse :</label>
+         <select id="vitesse" name="vitesse">
+           <option value="choisir_vitesse" hidden>Choisir</option>
+           <option value="Manuelle">Manuelle</option>
+           <option value="Automatique">Automatique</option>
+         </select>
+       </div>
+       <span id="vitesse_erreur" style="text-align: center"></span>
+       
+       <div class="Places">
+         <label>Nombre de places :</label>
+         <input type="number" id="places" name="places" placeholder="Entrez le nombre de places :" >
+       </div>
+       <span id="places_erreur" style="text-align: center"></span>
+                
+       <div class="Prix">
+         <label>Prix :</label>
+         <input type="text" id="prix" name="prix" placeholder="Entrez le prix de la location :" >
+       </div>
+       <span id="prix_erreur" style="text-align: center"></span>
+          
+       <div class="fichier">
+         <span>Choisir une photo</span>
+         <input type="file" id="photo" name="photo" class="Fichier">
+       </div>
+       <span id="photo_erreur" style="text-align: center"></span>
+
+       <button class="form-control" style="background-color:lightgreen; margin-top:10px"><strong>Ajouter</strong></button><br />
+     </div>
+       
+       <a href="accueil.php" class="btn btn-warning">Précèdent</a> 
+       <span id="erreur"></span>
+     </form>
+     
+     <script>
+     
+      $('#form_javascript').submit(function(e) {
+
+        var formulaire_data = {
+
+          immatriculation: $('#imm').val(),
+          marque: $('#marque').val(),
+          carburant: $('#carburant').val(),
+          kilometrage: $('#kilometrage').val(),
+          vitesse: $('#vitesse').val(),
+          places: $('#places').val(),
+          prix: $('#prix').val(),
+          photo: $('#photo').prop("files")[0],
+        };
+
+        var form_data = new FormData();
+
+          form_data.append("immatriculation", formulaire_data.immatriculation);
+          form_data.append("marque", formulaire_data.marque);
+          form_data.append("carburant", formulaire_data.carburant);
+          form_data.append("kilometrage", formulaire_data.kilometrage);
+          form_data.append("vitesse", formulaire_data.vitesse);
+          form_data.append("places", formulaire_data.places);
+          form_data.append("prix", formulaire_data.prix);
+          form_data.append("photo", formulaire_data.photo);
+        
+        $.ajax({
+          type: "POST",
+          url: "ajouter_location.php",
+          data: form_data,
+          dataType: "json",
+          contentType: false,
+          processData: false,
+          }).done (function (data) {
+            console.log(data);
+          
+            if(!data.success) {
+
+              $('#imm_erreur').html('<div class="alert alert-danger">' + data.erreur.immatriculation + '</div>');
+                if(!data.erreur.immatriculation) {
+                  $('#imm_erreur').html('');
+                }
+
+              $('#Imm_erreur').html('<div class="alert alert-danger">' + data.erreur.err_imm + '</div>');               
+                if(!data.erreur.err_imm) {
+                  $('#Imm_erreur').html('');
+                }
+
+              $('#marque_erreur').html('<div class="alert alert-danger">' + data.erreur.marque + '</div>');
+                if(!data.erreur.marque) {
+                  $('#marque_erreur').html('');
+                }
+              
+              $('#carburant_erreur').html('<div class="alert alert-danger">' + data.erreur.carburant + '</div>');
+                if(!data.erreur.carburant) {
+                  $('#carburant_erreur').html('');
+                }
+
+              $('#kilometrage_erreur').html('<div class="alert alert-danger">' + data.erreur.kilometrage + '</div>');
+                if(!data.erreur.kilometrage) {
+                  $('#kilometrage_erreur').html('');
+                }
+
+              $('#vitesse_erreur').html('<div class="alert alert-danger">' + data.erreur.vitesse + '</div>');
+                if(!data.erreur.vitesse) {
+                  $('#vitesse_erreur').html('');
+                }
+
+              $('#places_erreur').html('<div class="alert alert-danger">' + data.erreur.places + '</div>');
+                if(!data.erreur.places) {
+                  $('#places_erreur').html('');
+                }
+
+              $('#prix_erreur').html('<div class="alert alert-danger">' + data.erreur.prix + '</div>');
+                if(!data.erreur.prix) {
+                  $('#prix_erreur').html('');
+                }
+
+              $('#photo_erreur').html('<div class="alert alert-danger">' + data.erreur.photo + '</div>');
+                if(!data.erreur.photo) {
+                  $('#photo_erreur').html('');
+                }
+               
+              } else {
+                  $('#validation').html('<div class="alert alert-success">' + data.message + "</div>");
+              }
+              });
+                e.preventDefault();
+        });
+    
+    </script>
+    
+   </div>
+  </div>
+   
+  </body>
+  
+</html>
